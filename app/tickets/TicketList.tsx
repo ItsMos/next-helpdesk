@@ -1,0 +1,29 @@
+import Link from "next/link";
+
+async function getTickets() {
+  const res = await fetch('https://dummyjson.com/todos', { next: { revalidate: 0 } });
+  return res.json();
+}
+
+export default async function TicketList() {
+  const tickets = (await getTickets()).todos;
+
+  return (
+    <>
+      {tickets.map((ticket: any) => (
+        <div key={ticket.id} className="card my-5">
+          <Link href={`/tickets/${ticket.id}`}>
+            <h3>{ticket.todo}</h3>
+            <p>{ticket.todo.slice(0,10)}...</p>
+            <div className={`pill ${ticket.completed ? 'low':'high' }`}>
+              {ticket.completed ? 'Done' : 'Pending'}
+            </div>
+          </Link>
+        </div>
+      ))}
+      {tickets.length === 0 && (
+        <p className="text-center">There are no open tickets, yay!</p>
+      )}
+    </>
+  )
+}
